@@ -17,11 +17,13 @@ app.use(cookieParser())
 // routes import 
 import userRouter from "./routers/user.router.js"
 import propertyRouter from "./routers/property.router.js"
+import subscriptionRouter from "./routers/subscription.routes.js"
 
 
 //decleration routes
 app.use("/api/user", userRouter)
 app.use("/api/property", propertyRouter)
+app.use("/api/subscription", subscriptionRouter)
 
 
 

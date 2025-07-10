@@ -15,13 +15,14 @@ const createproperty = async (req, res) => {
       rent,
       propertyType,
       noOfBedroom,
-      images,
+      image,
     } = req.body;
 
-    let imageUrl = "";
+    let imageUrls = [];
     if (req.file) {
       try {
-        imageUrl = await uploadImage(req.file);
+        const uploadedResult = await uploadImage(req.file.path); // Assuming uploadImage takes path
+    imageUrls.push(uploadedResult.secure_url);
       } catch (error) {
         return res.status(500).json({ message: error.message });
       }
@@ -51,11 +52,11 @@ const createproperty = async (req, res) => {
       rent,
       propertyType,
       noOfBedroom,
-      images: imageUrl,
+      image: imageUrls,
     });
     await newProperty.save();
 
-    res.status(201).json({newProperty:{image:imageUrl}});
+    res.status(201).json({newProperty:{image:newProperty.image}});
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -112,9 +113,7 @@ const updateProperty = async (req, res) => {
       }
 
       const result = await uploadImage(req.file.path);
-      updateData.image = result.secure_url;
-      // Remove the temp file
-      fs.unlinkSync(req.file.path);
+      updates.image = [result.secure_url];
     }
 
     const updatedProperty = await Property.findByIdAndUpdate(
